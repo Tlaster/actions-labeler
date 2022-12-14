@@ -3,14 +3,14 @@ import * as github from '@actions/github'
 
 async function run(): Promise<void> {
   try {
-    const token: string = core.getInput('github-token')
+    const token: string = core.getInput('github_token')
     const octokit = github.getOctokit(token)
     // check if this is a pull request
     if (github.context.payload.pull_request) {
-      const wipStartWith = core.getInput('wip-start-with')
-      const wipLabel = core.getInput('wip-label')
-      const readyLabel = core.getInput('ready-label')
-      const approvedLabel = core.getInput('approved-label')
+      const wipStartWith = core.getInput('wip_start_with')
+      const wipLabel = core.getInput('wip_label')
+      const readyLabel = core.getInput('ready_label')
+      const approvedLabel = core.getInput('approved_label')
 
       const pullRequest = github.context.payload.pull_request
   

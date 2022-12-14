@@ -40,14 +40,14 @@ const github = __importStar(__nccwpck_require__(5438));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const token = core.getInput('github-token');
+            const token = core.getInput('github_token');
             const octokit = github.getOctokit(token);
             // check if this is a pull request
             if (github.context.payload.pull_request) {
-                const wipStartWith = core.getInput('wip-start-with');
-                const wipLabel = core.getInput('wip-label');
-                const readyLabel = core.getInput('ready-label');
-                const approvedLabel = core.getInput('approved-label');
+                const wipStartWith = core.getInput('wip_start_with');
+                const wipLabel = core.getInput('wip_label');
+                const readyLabel = core.getInput('ready_label');
+                const approvedLabel = core.getInput('approved_label');
                 const pullRequest = github.context.payload.pull_request;
                 // check if the pull request title starts with the WIP string
                 if (pullRequest.title.startsWith(wipStartWith)) {
