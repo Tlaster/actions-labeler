@@ -16,7 +16,7 @@ async function run(): Promise<void> {
   
       // check if the pull request title starts with the WIP string
       if (pullRequest.title.startsWith(wipStartWith)) {
-        // check if label is already set
+        // check if label is not set
         if (!pullRequest.labels.some((label: any) => label.name === wipLabel)) {
           // add label
           await octokit.rest.issues.addLabels({
@@ -37,10 +37,10 @@ async function run(): Promise<void> {
         }
       }
 
-      // check if the pull request is not wip and does not have the ready label
-      if (!pullRequest.title.startsWith(wipStartWith) && !pullRequest.labels.some((label: any) => label.name === readyLabel)) {
-        // check if the pull request has the approved label
-        if (pullRequest.labels.some((label: any) => label.name === approvedLabel)) {
+      // check if the pull request is not wip
+      if (!pullRequest.title.startsWith(wipStartWith)) {
+        // check if label is not set
+        if (!pullRequest.labels.some((label: any) => label.name === readyLabel)) {
           // add label
           await octokit.rest.issues.addLabels({
             ...github.context.repo,
@@ -48,8 +48,18 @@ async function run(): Promise<void> {
             labels: [readyLabel]
           })
         }
+      } else {
+        // check if label is set
+        if (pullRequest.labels.some((label: any) => label.name === readyLabel)) {
+          // remove label
+          await octokit.rest.issues.removeLabel({
+            ...github.context.repo,
+            issue_number: pullRequest.number,
+            name: readyLabel
+          })
+        }
       }
-
+      
       // check if the pull request is all approved and does not have the approved label
       if (pullRequest.labels.some((label: any) => label.name === readyLabel) && !pullRequest.labels.some((label: any) => label.name === approvedLabel)) {
         // check if the pull request has the approved label
