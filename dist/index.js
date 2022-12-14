@@ -8,11 +8,7 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -55,7 +51,7 @@ function run() {
                 const pullRequest = github.context.payload.pull_request;
                 // check if the pull request title starts with the WIP string
                 if (pullRequest.title.startsWith(wipStartWith)) {
-                    // check if label is already set
+                    // check if label is not set
                     if (!pullRequest.labels.some((label) => label.name === wipLabel)) {
                         // add label
                         yield octokit.rest.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { issue_number: pullRequest.number, labels: [wipLabel] }));
@@ -68,12 +64,19 @@ function run() {
                         yield octokit.rest.issues.removeLabel(Object.assign(Object.assign({}, github.context.repo), { issue_number: pullRequest.number, name: wipLabel }));
                     }
                 }
-                // check if the pull request is not wip and does not have the ready label
-                if (!pullRequest.title.startsWith(wipStartWith) && !pullRequest.labels.some((label) => label.name === readyLabel)) {
-                    // check if the pull request has the approved label
-                    if (pullRequest.labels.some((label) => label.name === approvedLabel)) {
+                // check if the pull request is not wip
+                if (!pullRequest.title.startsWith(wipStartWith)) {
+                    // check if label is not set
+                    if (!pullRequest.labels.some((label) => label.name === readyLabel)) {
                         // add label
                         yield octokit.rest.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { issue_number: pullRequest.number, labels: [readyLabel] }));
+                    }
+                }
+                else {
+                    // check if label is set
+                    if (pullRequest.labels.some((label) => label.name === readyLabel)) {
+                        // remove label
+                        yield octokit.rest.issues.removeLabel(Object.assign(Object.assign({}, github.context.repo), { issue_number: pullRequest.number, name: readyLabel }));
                     }
                 }
                 // check if the pull request is all approved and does not have the approved label
