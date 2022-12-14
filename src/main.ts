@@ -13,7 +13,7 @@ async function run(): Promise<void> {
       const approvedLabel = core.getInput('approved_label')
 
       const pullRequest = github.context.payload.pull_request
-  
+
       // check if the pull request title starts with the WIP string
       if (pullRequest.title.startsWith(wipStartWith)) {
         // check if label is not set
@@ -59,36 +59,25 @@ async function run(): Promise<void> {
           })
         }
       }
-      
+
       // check if the pull request is not wip
       if (!pullRequest.title.startsWith(wipStartWith)) {
-        // check if all reviewers approved the pull request
-        if (pullRequest.requested_reviewers.length === pullRequest.requested_reviewers.filter((reviewer: any) => reviewer.state === 'APPROVED').length) {
-          // check if label is not set
-          if (!pullRequest.labels.some((label: any) => label.name === approvedLabel)) {
-            // add label
-            await octokit.rest.issues.addLabels({
-              ...github.context.repo,
-              issue_number: pullRequest.number,
-              labels: [approvedLabel]
-            })
+        // check if reviewers are requested
+        if (pullRequest.requested_reviewers.length > 0) {
+          // check if all reviewers approved the pull request
+          if (pullRequest.requested_reviewers.length === pullRequest.requested_reviewers.filter((reviewer: any) => reviewer.state === 'APPROVED').length) {
+            // check if label is not set
+            if (!pullRequest.labels.some((label: any) => label.name === approvedLabel)) {
+              // add label
+              await octokit.rest.issues.addLabels({
+                ...github.context.repo,
+                issue_number: pullRequest.number,
+                labels: [approvedLabel]
+              })
+            }
           }
         }
       }
-
-      // // check if the pull request is all approved and does not have the approved label
-      // if (pullRequest.labels.some((label: any) => label.name === readyLabel) && !pullRequest.labels.some((label: any) => label.name === approvedLabel)) {
-      //   // check if the pull request has the approved label
-      //   if (pullRequest.requested_reviewers.length === pullRequest.requested_reviewers.filter((reviewer: any) => reviewer.state === 'APPROVED').length) {
-      //     // add label
-      //     await octokit.rest.issues.addLabels({
-      //       ...github.context.repo,
-      //       issue_number: pullRequest.number,
-      //       labels: [approvedLabel]
-      //     })
-      //   }
-      // }
-  
     }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
