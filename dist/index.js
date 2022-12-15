@@ -82,10 +82,13 @@ function run() {
                 }
                 // check if the pull request is not wip
                 if (!pullRequest.title.startsWith(wipStartWith)) {
+                    // get all requested reviewers
+                    const reviewers = yield octokit.rest.pulls.listRequestedReviewers(Object.assign(Object.assign({}, github.context.repo), { pull_number: pullRequest.number }));
+                    core.info(JSON.stringify(reviewers));
                     // check if reviewers are requested
-                    if (pullRequest.requested_reviewers.length > 0) {
+                    if (reviewers.data.users.length > 0) {
                         // check if all reviewers approved the pull request
-                        if (pullRequest.requested_reviewers.length === pullRequest.requested_reviewers.filter((reviewer) => reviewer.state === 'APPROVED').length) {
+                        if (reviewers.data.users.length === reviewers.data.users.filter((reviewer) => reviewer.state === 'APPROVED').length) {
                             // check if label is not set
                             if (!pullRequest.labels.some((label) => label.name === approvedLabel)) {
                                 // add label
