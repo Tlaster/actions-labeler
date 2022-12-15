@@ -44,6 +44,7 @@ function run() {
             const octokit = github.getOctokit(token);
             // check if this is a pull request
             if (github.context.payload.pull_request) {
+                core.info(JSON.stringify(github.context.payload.pull_request));
                 const wipStartWith = core.getInput('wip_start_with');
                 const wipLabel = core.getInput('wip_label');
                 const readyLabel = core.getInput('ready_label');
@@ -83,7 +84,6 @@ function run() {
                 if (!pullRequest.title.startsWith(wipStartWith)) {
                     // check if reviewers are requested
                     if (pullRequest.requested_reviewers.length > 0) {
-                        core.info(JSON.stringify(pullRequest.requested_reviewers));
                         // check if all reviewers approved the pull request
                         if (pullRequest.requested_reviewers.length === pullRequest.requested_reviewers.filter((reviewer) => reviewer.state === 'APPROVED').length) {
                             // check if label is not set
