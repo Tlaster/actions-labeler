@@ -64,15 +64,15 @@ async function run(): Promise<void> {
       // check if the pull request is not wip
       if (!pullRequest.title.startsWith(wipStartWith)) {
         // get all requested reviewers
-        const reviewers = await octokit.rest.pulls.listRequestedReviewers({
+        const reviewers = await octokit.rest.pulls.listReviews({
           ...github.context.repo,
           pull_number: pullRequest.number
         })
         core.info(JSON.stringify(reviewers))
         // check if reviewers are requested
-        if (reviewers.data.users.length > 0) {
+        if (reviewers.data.length > 0) {
           // check if all reviewers approved the pull request
-          if (reviewers.data.users.length === reviewers.data.users.filter((reviewer: any) => reviewer.state === 'APPROVED').length) {
+          if (reviewers.data.length === reviewers.data.filter((reviewer: any) => reviewer.state === 'APPROVED').length) {
             // check if label is not set
             if (!pullRequest.labels.some((label: any) => label.name === approvedLabel)) {
               // add label
