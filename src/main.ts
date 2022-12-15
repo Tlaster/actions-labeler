@@ -70,7 +70,7 @@ async function run(): Promise<void> {
         })
         core.info(JSON.stringify(reviewers))
         // check if reviewers are requested
-        if (pullRequest.requested_reviewers.length == 0) {
+        if (pullRequest.requested_reviewers.length == 0 && reviewers.data.length > 0) {
           // check if all reviewers approved the pull request
           if (reviewers.data.every((review: any) => review.state === 'APPROVED')) {
             // check if label is not set
