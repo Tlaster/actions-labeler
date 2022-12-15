@@ -64,6 +64,7 @@ async function run(): Promise<void> {
       if (!pullRequest.title.startsWith(wipStartWith)) {
         // check if reviewers are requested
         if (pullRequest.requested_reviewers.length > 0) {
+          console.log(JSON.stringify(pullRequest.requested_reviewers))
           // check if all reviewers approved the pull request
           if (pullRequest.requested_reviewers.length === pullRequest.requested_reviewers.filter((reviewer: any) => reviewer.state === 'APPROVED').length) {
             // check if label is not set
