@@ -86,9 +86,9 @@ function run() {
                     const reviewers = yield octokit.rest.pulls.listReviews(Object.assign(Object.assign({}, github.context.repo), { pull_number: pullRequest.number }));
                     core.info(JSON.stringify(reviewers));
                     // check if reviewers are requested
-                    if (reviewers.data.length > 0) {
+                    if (pullRequest.requested_reviewers.length > 0) {
                         // check if all reviewers approved the pull request
-                        if (reviewers.data.length === reviewers.data.filter((reviewer) => reviewer.state === 'APPROVED').length) {
+                        if (pullRequest.requested_reviewers.length === reviewers.data.filter((reviewer) => reviewer.state === 'APPROVED').length) {
                             // check if label is not set
                             if (!pullRequest.labels.some((label) => label.name === approvedLabel)) {
                                 // add label
