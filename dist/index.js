@@ -87,8 +87,12 @@ function run() {
                     core.info(JSON.stringify(reviewers));
                     // check if reviewers are requested
                     if (pullRequest.requested_reviewers.length === 0 && reviewers.data.length > 0) {
+                        // distinect reviewers
+                        const distinctReviewers = reviewers.data.filter((review, index, self) => index === self.findIndex((t) => t.user.login === review.user.login));
+                        // filter out pr requester
+                        const filteredReviewers = distinctReviewers.filter((review) => review.user.login !== pullRequest.user.login);
                         // check if all reviewers approved the pull request
-                        if (reviewers.data.every((review) => review.state === 'APPROVED')) {
+                        if (filteredReviewers.every((review) => review.state === 'APPROVED')) {
                             // check if label is not set
                             if (!pullRequest.labels.some((label) => label.name === approvedLabel)) {
                                 // add label
