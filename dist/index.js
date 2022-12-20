@@ -92,6 +92,7 @@ function run() {
                         // filter out pr requester
                         const filteredReviewers = distinctReviewers.filter((review) => review.user.login !== pullRequest.user.login);
                         // check if all reviewers approved the pull request
+                        core.info(JSON.stringify(filteredReviewers));
                         if (filteredReviewers.every((review) => review.state === 'APPROVED')) {
                             // check if label is not set
                             if (!pullRequest.labels.some((label) => label.name === approvedLabel)) {
