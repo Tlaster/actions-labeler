@@ -87,8 +87,19 @@ function run() {
                     core.info(JSON.stringify(reviewers));
                     // check if reviewers are requested
                     if (pullRequest.requested_reviewers.length === 0 && reviewers.data.length > 0) {
-                        // distinect reviewers
-                        const distinctReviewers = reviewers.data.filter((review, index, self) => index === self.findIndex((t) => t.user.login === review.user.login));
+                        // distinect reviewers by last review
+                        const distinctReviewers = reviewers.data.reduce((acc, review) => {
+                            const index = acc.findIndex((r) => r.user.login === review.user.login);
+                            if (index === -1) {
+                                acc.push(review);
+                            }
+                            else {
+                                if (acc[index].submitted_at < review.submitted_at) {
+                                    acc[index] = review;
+                                }
+                            }
+                            return acc;
+                        }, []);
                         // filter out pr requester
                         const filteredReviewers = distinctReviewers.filter((review) => review.user.login !== pullRequest.user.login);
                         // check if all reviewers approved the pull request
